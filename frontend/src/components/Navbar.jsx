@@ -1,16 +1,12 @@
 const Navbar = () => {
   return (
     <>
-      <div className="navbar bg-base-100 shadow-sm p-4 md:p-8 border *:border-blue-50 rounded-xl">
+      <div className="navbar bg-base-300 shadow-sm p-4 md:p-8">
         <div className="flex-1">
-          <a className="btn btn-ghost text-3xl">DevConnect</a>
+          <a className="btn btn-ghost text-3xl">DevConnect 🎀</a>
         </div>
         <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Search"
-            className="input input-bordered w-48 md:w-64"
-          />
+           
           <div className="dropdown dropdown-end ">
             <div
               tabIndex={0}
@@ -47,6 +43,5 @@ const Navbar = () => {
     </>
   );
 };
-
 
 export default Navbar;
