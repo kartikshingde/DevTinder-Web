@@ -1,15 +1,16 @@
 import { useSelector } from "react-redux";
+import { Link } from "react-router";
 
 const Navbar = () => {
   const user = useSelector((store) => store.user);
 
-  // console.log(user);
+  // console.log(user);n
 
   return (
     <>
       <div className="navbar bg-base-300 shadow-sm p-4 md:p-8">
         <div className="flex-1">
-          <a className="btn btn-ghost text-3xl">DevConnect 🎀</a>
+          <Link to={"/"} className="btn btn-ghost text-3xl">DevConnect 🎀</Link>
         </div>
         {!user && (
           <p className="px-4 py-2">Welcome Guest</p>
@@ -19,7 +20,7 @@ const Navbar = () => {
           <div className="flex gap-2">
             <div className="dropdown dropdown-end flex">
               <p className="px-4 py-2">
-                Welcome {user ? user.firstName : "Guest"}
+                Welcome {user ? user.firstName || user.message.firstName : "Guest"}
               </p>
               <div
                 tabIndex={0}
@@ -28,8 +29,8 @@ const Navbar = () => {
               >
                 <div className="w-10 rounded-full">
                   <img
-                    alt="Tailwind CSS Navbar component"
-                    src={user.profileUrl}
+                    alt="User Image"
+                    src={user.profileUrl || user.message.profileUrl}
                   />
                 </div>
               </div>
@@ -38,10 +39,10 @@ const Navbar = () => {
                 className="menu menu-xl dropdown-content bg-base-100 rounded-box z-1 mt-12 w-52 p-2 shadow"
               >
                 <li>
-                  <a className="justify-between">
+                  <Link to={"/profile"} className="justify-between">
                     Profile
                     <span className="badge">View</span>
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a>Settings</a>

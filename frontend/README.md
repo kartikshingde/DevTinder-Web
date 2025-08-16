@@ -24,6 +24,11 @@
 - Navbar should update as soon as user logs in
 - Refactor our code to add constant file i.e. add BASE_URL of backend
 
+- You should not be able to access other route without login
+- If token is not present , redirect user to login page
+- Logout
+- Profile Page
+
 Body
 Navbar
 Route= / =>Feed
