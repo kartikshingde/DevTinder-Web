@@ -1,26 +1,30 @@
-
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import Body from "./components/Body";
 import Profile from "./components/Profile";
 import Login from "./components/Login";
+import { Provider } from "react-redux";
+import appStore from "./utils/appStore";
+import Feed from "./components/Feed"
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Body />,
-    children:[
-      {path:"/login", element:<Login />},
-      {path:"/profile", element:<Profile />}
-    ]
+    children: [
+      {path:'/', element:<Feed/>},
+      { path: "/login", element: <Login /> },
+      { path: "/profile", element: <Profile /> },
+    ],
   },
-  
 ]);
 
 function App() {
   return (
     <>
-      <RouterProvider router={router} />
+      <Provider store={appStore}>
+        <RouterProvider router={router} />
+      </Provider>
     </>
   );
 }
