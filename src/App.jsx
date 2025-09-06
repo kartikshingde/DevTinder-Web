@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
 import Feed from "./components/Feed"
+import Error from "./components/Error";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,8 @@ const router = createBrowserRouter([
       {path:'/', element:<Feed/>},
       { path: "/login", element: <Login /> },
       { path: "/profile", element: <Profile /> },
+      { path: "/error", element: <Error /> },
+
     ],
   },
 ]);

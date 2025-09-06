@@ -4,6 +4,7 @@ import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { addFeed } from "../utils/feedSlice";
 import UserCard from "./UserCard";
+import Error from "./Error";
 
 const Feed = () => {
   const feed = useSelector((store) => store.feed);
@@ -19,7 +20,7 @@ const Feed = () => {
 
       dispatch(addFeed(res.data));
     } catch (err) {
-      //TODO: handle error
+      return <Error/>
     }
   };
 
