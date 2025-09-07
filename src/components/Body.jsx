@@ -34,9 +34,11 @@ const Body = () => {
   }, []);
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <Outlet />
+      <main className="flex-1 pt-4 pb-20">
+        <Outlet />
+      </main>
       <Footer />
 
       {/* outlet => to render the children routes of parent  */}
