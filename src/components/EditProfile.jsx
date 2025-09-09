@@ -23,6 +23,9 @@ const EditProfile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [originalData, setOriginalData] = useState({});
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imagePreview, setImagePreview] = useState('');
 
   // Populate form with user data from Redux
   useEffect(() => {
@@ -59,6 +62,97 @@ const EditProfile = () => {
     }
   };
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      console.log('File selected:', file.name, file.type, file.size);
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setErrors(prev => ({ ...prev, profileUrl: 'Please select a valid image file' }));
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors(prev => ({ ...prev, profileUrl: 'Image size must be less than 5MB' }));
+        return;
+      }
+      
+      setSelectedFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        console.log('FileReader loaded, setting preview');
+        setImagePreview(e.target.result);
+      };
+      reader.onerror = (e) => {
+        console.error('FileReader error:', e);
+      };
+      reader.readAsDataURL(file);
+      
+      // Clear any previous errors
+      setErrors(prev => ({ ...prev, profileUrl: '' }));
+    } else {
+      console.log('No file selected');
+    }
+  };
+
+  const handleImageUpload = async () => {
+    if (!selectedFile) return;
+    
+    setUploadingImage(true);
+    
+    try {
+      // Get upload URL from backend
+      const uploadUrlResponse = await axios.post(
+        BASE_URL + '/get-upload-url',
+        {filename:selectedFile.name},
+        { withCredentials: true }
+      );
+      
+      const { uploadUrl, key } = uploadUrlResponse.data;
+      console.log(uploadUrl)
+      console.log(key);
+      
+      // Upload file to S3
+      await axios.put(uploadUrl, selectedFile, {
+        headers: {
+          'Content-Type': selectedFile.type,
+        },
+      });
+      
+      // Construct the S3 URL (you might need to adjust this based on your S3 setup)
+      const s3Url = uploadUrl.split('?')[0]; // Remove query parameters to get clean URL
+      
+      // Update form data with new image URL
+      setFormData(prev => ({
+        ...prev,
+        profileUrl: s3Url
+      }));
+      
+      console.log('Updated formData.profileUrl to:', s3Url);
+      
+      // Clear file selection and preview since we now have the S3 URL
+      setSelectedFile(null);
+      setImagePreview(''); // Clear preview since formData.profileUrl will now show the uploaded image
+      
+      // Reset file input
+      const fileInput = document.getElementById('profileImage');
+      if (fileInput) fileInput.value = '';
+      
+      setSuccessMessage('Image uploaded successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+      
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      setErrors(prev => ({ ...prev, profileUrl: 'Failed to upload image. Please try again.' }));
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const validateForm = () => {
     const newErrors = {};
     
@@ -79,9 +173,7 @@ const EditProfile = () => {
       newErrors.age = 'Age must be between 18 and 100';
     }
     
-    if (formData.profileUrl && formData.profileUrl.trim() && !/^https?:\/\/.+/.test(formData.profileUrl)) {
-      newErrors.profileUrl = 'Please enter a valid URL starting with http:// or https://';
-    }
+    
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -142,6 +234,7 @@ const EditProfile = () => {
       
       // Update Redux store with the updated user data
       const updatedUser = response.data.data || response.data.user || response.data;
+      console.log('Updated user data from server:', updatedUser);
       dispatch(addUser(updatedUser));
       
       // Update local form state with the latest data to reflect changes immediately
@@ -159,6 +252,10 @@ const EditProfile = () => {
         };
         setFormData(updatedFormData);
         setOriginalData(updatedFormData); // Update original data to new values
+        
+        // Clear any image preview since we now have the updated profile
+        setImagePreview('');
+        setSelectedFile(null);
       }
       
       setSuccessMessage('Profile updated successfully!');
@@ -274,37 +371,58 @@ const EditProfile = () => {
               )}
             </div>
 
-            {/* Profile URL */}
+            {/* Profile Image Upload */}
             <div>
-              <label htmlFor="profileUrl" className="block text-sm font-medium text-gray-700 mb-2">
-                Profile Image URL
+              <label htmlFor="profileImage" className="block text-sm font-medium text-gray-700 mb-2">
+                Profile Image
               </label>
-              <input
-                type="url"
-                id="profileUrl"
-                name="profileUrl"
-                value={formData.profileUrl}
-                onChange={handleInputChange}
-                className={`w-full text-black px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                  errors.profileUrl ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                }`}
-                placeholder="https://example.com/your-photo.jpg"
-              />
-              {errors.profileUrl && (
-                <p className="mt-1 text-sm text-red-600">{errors.profileUrl}</p>
-              )}
-              {formData.profileUrl && (
-                <div className="mt-3 flex justify-center">
-                  <img
-                    src={formData.profileUrl}
-                    alt="Profile preview"
-                    className="h-20 w-20 rounded-full object-cover border-2 border-gray-200"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
-                </div>
-              )}
+              <div className="space-y-4">
+                <input
+                  type="file"
+                  id="profileImage"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="w-full text-black px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors border-gray-300"
+                />
+                {selectedFile && (
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                    <span className="text-sm text-blue-800">
+                      Selected: {selectedFile.name}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleImageUpload}
+                      disabled={uploadingImage}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 text-sm"
+                    >
+                      {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                    </button>
+                  </div>
+                )}
+                {errors.profileUrl && (
+                  <p className="mt-1 text-sm text-red-600">{errors.profileUrl}</p>
+                )}
+                {/* Current or preview image */}
+                {(imagePreview || formData.profileUrl) && (
+                  <div className="mt-3 flex flex-col items-center">
+                    <div className="text-xs text-gray-500 mb-2">
+                      {imagePreview ? 'Preview (not uploaded yet)' : 'Current profile image'}
+                    </div>
+                    <img
+                      src={imagePreview || formData.profileUrl}
+                      alt="Profile preview"
+                      className="h-32 w-32 rounded-full object-cover border-4 border-blue-200 shadow-lg"
+                      onError={(e) => {
+                        console.error('Image failed to load:', e.target.src);
+                        e.target.style.display = 'none';
+                      }}
+                      onLoad={() => {
+                        console.log('Image loaded successfully:', imagePreview || formData.profileUrl);
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Gender and Age */}

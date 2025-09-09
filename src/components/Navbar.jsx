@@ -43,7 +43,7 @@ const Navbar = () => {
             <div className="dropdown dropdown-end flex">
               <p className="px-4 py-2">
                 Welcome{" "}
-                {user ? user.firstName || user.message.firstName : "Guest"}
+                {user ? (user.firstName || user.message?.firstName) : "Guest"}
               </p>
               <div
                 tabIndex={0}
@@ -54,7 +54,10 @@ const Navbar = () => {
                 <div className="w-10 rounded-full">
                   <img
                     alt="User Image"
-                    src={user.profileUrl || user.message.profileUrl}
+                    src={user.profileUrl || user.message?.profileUrl || '/default-avatar.png'}
+                    onError={(e) => {
+                      e.target.src = '/default-avatar.png';
+                    }}
                   />
                 </div>
               </div>
