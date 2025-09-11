@@ -29,7 +29,9 @@
 - Logout Feature
 - Get the feed and add the feed in the store
 - Build the user card on feed
-
+- Built profile edit page
+- Added s3 for storing profile image
+- Cloudfront in progress
 
 Body
 Navbar
