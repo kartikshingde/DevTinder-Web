@@ -113,8 +113,8 @@ const EditProfile = () => {
       );
       
       const { uploadUrl, key } = uploadUrlResponse.data;
-      console.log(uploadUrl)
-      console.log(key);
+      // console.log(uploadUrl)
+      // console.log(key);
       
       // Upload file to S3
       await axios.put(uploadUrl, selectedFile, {
@@ -122,17 +122,19 @@ const EditProfile = () => {
           'Content-Type': selectedFile.type,
         },
       });
-      
-      // Construct the S3 URL (you might need to adjust this based on your S3 setup)
-      const s3Url = uploadUrl.split('?')[0]; // Remove query parameters to get clean URL
+
+      const {downloadUrl }=await axios.post(
+        BASE_URL+"/get-download-url",{key}
+      );
+      console.log(downloadUrl)
       
       // Update form data with new image URL
       setFormData(prev => ({
         ...prev,
-        profileUrl: s3Url
+        profileUrl: downloadUrl
       }));
       
-      console.log('Updated formData.profileUrl to:', s3Url);
+      console.log('Updated formData.profileUrl to:', downloadUrl);
       
       // Clear file selection and preview since we now have the S3 URL
       setSelectedFile(null);
