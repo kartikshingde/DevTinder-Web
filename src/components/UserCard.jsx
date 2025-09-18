@@ -8,9 +8,14 @@ const UserCard = ({ user }) => {
       {/* Profile Image */}
       <div className="w-full h-64 bg-gray-800">
         <img
-          src={profileUrl}
+          src={profileUrl || '/default-avatar.svg'}
           alt={firstName + " " + lastName}
           className="w-full h-full object-cover"
+          onError={(e) => {
+            if (e.target.src !== window.location.origin + '/default-avatar.svg') {
+              e.target.src = '/default-avatar.svg';
+            }
+          }}
         />
       </div>
 

@@ -54,9 +54,11 @@ const Navbar = () => {
                 <div className="w-10 rounded-full">
                   <img
                     alt="User Image"
-                    src={user.profileUrl || user.message?.profileUrl || '/default-avatar.png'}
+                    src={user.profileUrl || user.message?.profileUrl || '/default-avatar.svg'}
                     onError={(e) => {
-                      e.target.src = '/default-avatar.png';
+                      if (e.target.src !== window.location.origin + '/default-avatar.svg') {
+                        e.target.src = '/default-avatar.svg';
+                      }
                     }}
                   />
                 </div>
