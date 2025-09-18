@@ -10,7 +10,7 @@ const UserCard = ({ user }) => {
         <img
           src={profileUrl || '/default-avatar.svg'}
           alt={firstName + " " + lastName}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover object-center"
           onError={(e) => {
             if (e.target.src !== window.location.origin + '/default-avatar.svg') {
               e.target.src = '/default-avatar.svg';

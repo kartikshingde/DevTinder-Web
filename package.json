@@ -13,6 +13,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "@tailwindcss/vite": "^4.1.12",
     "axios": "^1.11.0",
+    "browser-image-compression": "^2.0.2",
     "daisyui": "^5.0.50",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

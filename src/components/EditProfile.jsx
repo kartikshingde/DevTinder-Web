@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+import imageCompression from "browser-image-compression";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants";
 import { addUser } from "../utils/userSlice";
@@ -66,40 +67,60 @@ const EditProfile = () => {
     }
   };
 
-  const handleFileSelect = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
-        setErrors((prev) => ({
-          ...prev,
-          profileUrl: "Please select a valid image file",
-        }));
-        return;
-      }
-
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors((prev) => ({
-          ...prev,
-          profileUrl: "Image size must be less than 5MB",
-        }));
-        return;
-      }
-
-      setSelectedFile(file);
-
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target.result);
-      };
-      reader.readAsDataURL(file);
-
-      // Clear any previous errors
-      setErrors((prev) => ({ ...prev, profileUrl: "" }));
+  const handleFileSelect = async (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    // Check file type
+    if (!file.type.startsWith("image/")) {
+      setErrors((prev) => ({
+        ...prev,
+        profileUrl: "Please select a valid image file",
+      }));
+      return;
     }
-  };
+
+    // Check max file size (before compression)
+    if (file.size > 10 * 1024 * 1024) { // 10MB
+      setErrors((prev) => ({
+        ...prev,
+        profileUrl: "Image size must be less than 10MB",
+      }));
+      return;
+    }
+
+    try {
+      // Compression options
+      const options = {
+        maxSizeMB: 1,             // Target max size (1MB)
+        maxWidthOrHeight: 1024,   // Resize to max 1024px
+        useWebWorker: true,       // Improves performance
+      };
+
+      // Compress the image
+      const compressedFile = await imageCompression(file, options);
+
+      // Save compressed file in state
+      setSelectedFile(compressedFile);
+
+      // Preview compressed image
+      const previewUrl = await imageCompression.getDataUrlFromFile(compressedFile);
+      setImagePreview(previewUrl);
+
+      // Clear errors
+      setErrors((prev) => ({ ...prev, profileUrl: "" }));
+
+      console.log("Original file size:", (file.size / 1024 / 1024).toFixed(2), "MB");
+      console.log("Compressed file size:", (compressedFile.size / 1024 / 1024).toFixed(2), "MB");
+
+    } catch (error) {
+      console.error("Image compression error:", error);
+      setErrors((prev) => ({
+        ...prev,
+        profileUrl: "Error compressing image",
+      }));
+    }
+  }
+};
 
   const uploadImageToS3 = async (file) => {
     try {
