@@ -34,6 +34,11 @@
 - Cloudfront integrated.
 - Page to See all my connnections
 - Page to See all my Connection Requests
+- Feature - Accept/Reject Connection Request
+Remaining:
+    -Send/Ignore user card from feed.
+    -Signup New User Page
+    -E2E testing
 
 Body
 Navbar

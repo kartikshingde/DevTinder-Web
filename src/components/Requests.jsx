@@ -1,18 +1,34 @@
 import axios from "axios";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { BASE_URL } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
-import { addRequests } from "../utils/requestSlice";
+import { addRequests, removeRequest } from "../utils/requestSlice";
 
 const Requests = () => {
+  //Requests
   const requests = useSelector((store) => store.requests);
   const dispatch = useDispatch();
+
+  const reviewRequest = async (status, _id) => {
+    try {
+      const res = await axios.post(
+        BASE_URL + "/request/review/" + status + "/" + _id,
+        {},
+        { withCredentials: true }
+      );
+
+      dispatch(removeRequest(_id));
+    } catch (err) {
+      //ERROR
+    }
+  };
+
   const fetchRequest = async () => {
     try {
       const res = await axios.get(BASE_URL + "/user/requests/received", {
         withCredentials: true,
       });
-    //   console.log(res.data.data);
+      //   console.log(res.data.data);
       dispatch(addRequests(res.data.data));
     } catch (err) {
       //Error
@@ -26,7 +42,11 @@ const Requests = () => {
   if (!requests) return;
 
   if (requests.length === 0)
-    return <h1 className="text-bold text-3xl">No Requests Found</h1>;
+    return (
+      <h1 className="text-bold text-3xl flex justify-center my-10">
+        No Requests Found
+      </h1>
+    );
 
   return (
     <div className="my-10">
@@ -103,10 +123,16 @@ const Requests = () => {
                   </div>
                 )}
                 <div className="flex gap-3 mt-6 justify-center">
-                  <button className="flex-1 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition text-sm font-medium">
+                  <button
+                    onClick={() => reviewRequest("rejected", request._id)}
+                    className="flex-1 py-2 rounded-lg bg-red-600 hover:bg-red-700 transition text-sm font-medium"
+                  >
                     Reject
                   </button>
-                  <button className="flex-1 py-2 rounded-lg bg-green-600 hover:bg-green-700 transition text-sm font-medium">
+                  <button
+                    onClick={() => reviewRequest("accepted", request._id)}
+                    className="flex-1 py-2 rounded-lg bg-green-600 hover:bg-green-700 transition text-sm font-medium"
+                  >
                     Accept
                   </button>
                 </div>
