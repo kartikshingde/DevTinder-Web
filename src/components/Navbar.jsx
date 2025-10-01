@@ -8,7 +8,7 @@ import { removeUser } from "../utils/userSlice";
 const Navbar = () => {
   const user = useSelector((store) => store.user);
   const dispatch = useDispatch();
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -20,9 +20,7 @@ const Navbar = () => {
         { withCredentials: true }
       );
       dispatch(removeUser());
-      return navigate("/login")
-
-
+      return navigate("/login");
     } catch (err) {
       //Error logic like redirect to error page
     }
@@ -43,7 +41,7 @@ const Navbar = () => {
             <div className="dropdown dropdown-end flex">
               <p className="px-4 py-2">
                 Welcome{" "}
-                {user ? (user.firstName || user.message?.firstName) : "Guest"}
+                {user ? user.firstName || user.message?.firstName : "Guest"}
               </p>
               <div
                 tabIndex={0}
@@ -54,10 +52,17 @@ const Navbar = () => {
                 <div className="w-10 rounded-full">
                   <img
                     alt="User Image"
-                    src={user.profileUrl || user.message?.profileUrl || '/default-avatar.svg'}
+                    src={
+                      user.profileUrl ||
+                      user.message?.profileUrl ||
+                      "/default-avatar.svg"
+                    }
                     onError={(e) => {
-                      if (e.target.src !== window.location.origin + '/default-avatar.svg') {
-                        e.target.src = '/default-avatar.svg';
+                      if (
+                        e.target.src !==
+                        window.location.origin + "/default-avatar.svg"
+                      ) {
+                        e.target.src = "/default-avatar.svg";
                       }
                     }}
                   />
@@ -79,7 +84,12 @@ const Navbar = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link onClick={() => setIsOpen(!isOpen)}>Settings</Link>
+                    <Link
+                      to={"/connections"}
+                      onClick={() => setIsOpen(!isOpen)}
+                    >
+                      Connections
+                    </Link>
                   </li>
                   <li>
                     <Link onClick={handleLogout}>Logout</Link>

@@ -31,7 +31,8 @@
 - Build the user card on feed
 - Built profile edit page
 - Added s3 for storing profile image
-- Cloudfront in progress
+- Cloudfront integrated.
+- See all my connnections
 
 Body
 Navbar
@@ -39,4 +40,3 @@ Route= / =>Feed
 Route= /login =>Login
 Route= /connections =>Connections
 Route= /profile =>Profile
-
