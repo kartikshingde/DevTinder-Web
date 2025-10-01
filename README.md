@@ -32,7 +32,8 @@
 - Built profile edit page
 - Added s3 for storing profile image
 - Cloudfront integrated.
-- See all my connnections
+- Page to See all my connnections
+- Page to See all my Connection Requests
 
 Body
 Navbar

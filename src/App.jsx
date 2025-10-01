@@ -8,6 +8,7 @@ import appStore from "./utils/appStore";
 import Feed from "./components/Feed";
 import Error from "./components/Error";
 import Connections from "./components/Connections";
+import Requests from "./components/Requests";
 
 const router = createBrowserRouter([
   {
@@ -19,7 +20,7 @@ const router = createBrowserRouter([
       { path: "/profile", element: <Profile /> },
       { path: "/error", element: <Error /> },
       { path: "/connections", element: <Connections /> },
-      { path: "/requests", element: <Profile /> },
+      { path: "/requests", element: <Requests /> },
     ],
   },
 ]);
@@ -29,7 +30,7 @@ function App() {
     <>
       <Provider store={appStore}>
         <RouterProvider router={router} />
-      </Provider> 
+      </Provider>
     </>
   );
 }

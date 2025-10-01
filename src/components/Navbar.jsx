@@ -71,7 +71,7 @@ const Navbar = () => {
               {isOpen && (
                 <ul
                   tabIndex={0}
-                  className="menu menu-xl dropdown-content bg-base-100 rounded-box z-1 mt-12 w-52 p-2 shadow"
+                  className="menu menu-xl dropdown-content bg-base-100 rounded-box z-1 mt-12 w-64 p-2 shadow"
                 >
                   <li>
                     <Link
@@ -89,6 +89,14 @@ const Navbar = () => {
                       onClick={() => setIsOpen(!isOpen)}
                     >
                       Connections
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to={"/requests"}
+                      onClick={() => setIsOpen(!isOpen)}
+                    >
+                       Requests
                     </Link>
                   </li>
                   <li>
