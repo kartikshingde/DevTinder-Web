@@ -3,17 +3,24 @@ import React from "react";
 const UserCard = ({ user }) => {
   const { firstName, lastName, profileUrl, age, gender, about, skills } = user;
 
+  // Normalize skills: always make it an array
+  const normalizedSkills = Array.isArray(skills)
+    ? skills
+    : typeof skills === "string"
+    ? skills.split(",").map((s) => s.trim()).filter(Boolean)
+    : [];
+
   return (
     <div className="w-full max-w-sm bg-gray-900 text-white rounded-xl shadow-lg overflow-hidden flex flex-col">
       {/* Profile Image */}
       <div className="w-full h-64 bg-gray-800">
         <img
-          src={profileUrl || '/default-avatar.svg'}
+          src={profileUrl || "/default-avatar.svg"}
           alt={firstName + " " + lastName}
           className="w-full h-full object-cover object-center"
           onError={(e) => {
-            if (e.target.src !== window.location.origin + '/default-avatar.svg') {
-              e.target.src = '/default-avatar.svg';
+            if (e.target.src !== window.location.origin + "/default-avatar.svg") {
+              e.target.src = "/default-avatar.svg";
             }
           }}
         />
@@ -34,9 +41,9 @@ const UserCard = ({ user }) => {
         <p className="text-sm text-gray-300 mt-3">{about}</p>
 
         {/* Skills */}
-        {skills && skills.length > 0 && (
+        {normalizedSkills.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-4">
-            {skills.map((skill, idx) => (
+            {normalizedSkills.map((skill, idx) => (
               <span
                 key={idx}
                 className="px-3 py-1 rounded-full text-xs font-medium bg-gray-800 text-gray-200"
